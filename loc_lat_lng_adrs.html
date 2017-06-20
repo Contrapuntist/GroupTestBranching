@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map, #map2 {
+        height: 50%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <div id="map2"></div>
+     <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+    <script>
+      var map, map2;
+
+      function initMap() {
+
+
+        var losangeles = new google.maps.LatLng("34.052235", "-118.243683");
+        map = new google.maps.Map(document.getElementById('map'), {
+          //center: {lat: 19.07, lng: 72.85},
+          center: losangeles,
+          zoom: 8
+        });
+
+
+        placeMarkerAndPanTo(losangeles, map);
+
+        var getLatLong = "https://maps.googleapis.com/maps/api/geocode/json?address=339+E+Chicago+Avenue,+Chicago,+IL&key=YOUR_API_KEY";
+
+        $.ajax({
+          url: getLatLong,
+          method: "GET"
+        }).done(function(response){
+            var aLat=response.results[0].geometry.location.lat;
+            var aLong=response.results[0].geometry.location.lng;
+            var address = new google.maps.LatLng(aLat, aLong);
+            map2 = new google.maps.Map(document.getElementById('map2'), {
+          //center: {lat: 19.07, lng: 72.85},
+          center: address,
+          zoom: 17
+        });
+            placeMarkerAndPanTo(address, map2);
+        });
+      }
+
+      function placeMarkerAndPanTo(latLng, map) {
+        var marker = new google.maps.Marker({
+          position: latLng,
+          map: map
+        });
+        map.panTo(latLng);
+
+      }
+      /*Zoom levels
+      1: World
+5: Landmass/continent
+10: City
+15: Streets
+20: Buildings
+
+getting lat and long based on addresses is handled by Geocoding
+known address in advance - static Geocoding
+
+https://developers.google.com/maps/documentation/geocoding/intro
+
+based on user input or on teh fly address - dynamic geocoding
+
+*/
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"
+    async defer></script>
+  </body>
+</html>
